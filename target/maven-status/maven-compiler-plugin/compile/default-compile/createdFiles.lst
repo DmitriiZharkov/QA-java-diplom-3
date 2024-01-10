@@ -1,0 +1,9 @@
+restclients\UserClient.class
+restclients\UserGenerator.class
+pageobject\MainPage.class
+pageobject\LoginPage.class
+pageobject\PasswordRecoveryPage.class
+pageobject\ProfilePage.class
+pageobject\RegisterPage.class
+restclients\User.class
+restclients\RestClient.class
