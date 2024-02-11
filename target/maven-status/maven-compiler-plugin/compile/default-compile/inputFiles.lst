@@ -1,9 +1,11 @@
-C:\yandex\QA-java-diplom-3\src\main\java\pageobject\MainPage.java
-C:\yandex\QA-java-diplom-3\src\main\java\restclients\UserClient.java
-C:\yandex\QA-java-diplom-3\src\main\java\restclients\User.java
+C:\yandex\QA-java-diplom-3\src\main\java\pageobject\BasePage.java
+C:\yandex\QA-java-diplom-3\src\main\java\driver\DriverFactory.java
+C:\yandex\QA-java-diplom-3\src\main\java\restclients\UserStep.java
 C:\yandex\QA-java-diplom-3\src\main\java\pageobject\LoginPage.java
-C:\yandex\QA-java-diplom-3\src\main\java\pageobject\PasswordRecoveryPage.java
+C:\yandex\QA-java-diplom-3\src\main\java\restclients\UserApi.java
+C:\yandex\QA-java-diplom-3\src\main\java\driver\YandexRule.java
+C:\yandex\QA-java-diplom-3\src\main\java\pageobject\PersonalAccount.java
+C:\yandex\QA-java-diplom-3\src\main\java\driver\ChromeRule.java
+C:\yandex\QA-java-diplom-3\src\main\java\restclients\Urls.java
 C:\yandex\QA-java-diplom-3\src\main\java\restclients\UserGenerator.java
 C:\yandex\QA-java-diplom-3\src\main\java\pageobject\RegisterPage.java
-C:\yandex\QA-java-diplom-3\src\main\java\pageobject\ProfilePage.java
-C:\yandex\QA-java-diplom-3\src\main\java\restclients\RestClient.java

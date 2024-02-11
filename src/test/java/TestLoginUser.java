@@ -1,126 +1,116 @@
-import io.qameta.allure.Description;
+import driver.ChromeRule;
+import driver.DriverFactory;
+import driver.YandexRule;
 import io.qameta.allure.junit4.DisplayName;
-import io.restassured.response.ValidatableResponse;
+import io.restassured.RestAssured;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.chrome.ChromeOptions;
+import pageobject.BasePage;
 import pageobject.LoginPage;
-import pageobject.MainPage;
-import pageobject.PasswordRecoveryPage;
 import pageobject.RegisterPage;
-import restclients.User;
-import restclients.UserClient;
-import restclients.UserGenerator;
+import restclients.UserApi;
+import restclients.UserStep;
 
-import static org.junit.Assert.*;
+import static org.openqa.selenium.devtools.v85.network.Network.clearBrowserCookies;
+import static restclients.Urls.STELLAR_BURGERS_HOME_PAGE_URL;
+import static restclients.UserGenerator.randomUser;
 
 @RunWith(Parameterized.class)
 public class TestLoginUser {
-    private WebDriver driver;
-    private static UserClient userClient;
-    private BrowserType browserType;
-    private User user;
-    private String accessToken;
-    private MainPage mainPage;
-    private LoginPage loginPage;
 
-    public TestLoginUser(BrowserType browserType){
-        this.browserType = browserType;
+    private UserApi userApi = randomUser();
+    UserStep userStep = new UserStep();
+
+    @Rule
+    public DriverFactory rule;
+
+    public TestLoginUser(DriverFactory rule) {
+        this.rule = rule;
     }
 
     @Parameterized.Parameters
-    public static Object[][] getBrowserVariants() {
-        return new Object[][] {
-                {BrowserType.CHROME},
-                {BrowserType.YANDEX},
+    public static Object[][] getData() {
+        return new Object[][]{
+                { new YandexRule() },
+                { new ChromeRule() }
         };
     }
+
     @Before
-    public void setUp() {
-        user = UserGenerator.getRandom();
-        userClient = new UserClient();
-        ValidatableResponse createResponse = userClient.createUser(user);
-        accessToken = createResponse.extract().path("accessToken");
-        ChromeOptions options = new ChromeOptions();
-        switch (browserType) {
-            case CHROME:
-                System.setProperty("webdriver.chrome.driver", "C:\\WebDriver\\bin\\chromedriver.exe");
-                break;
-            case YANDEX:
-                System.setProperty("webdriver.chrome.driver", "C:\\WebDriver\\bin\\yandexdriver.exe");
-                break;
-            default:
-                fail("Неожиданный браузер");
-                break;
-        }
-        options.addArguments("--whitelisted-ips=''");
-        driver = new ChromeDriver(options);
-        mainPage = new MainPage(driver);
-        loginPage = new LoginPage(driver);
-
+    public void setUp(){
+        RestAssured.baseURI = STELLAR_BURGERS_HOME_PAGE_URL;
+        userStep.create(userApi);
     }
 
     @Test
-    @DisplayName("Тест логина через кнопку войти в аккаунт")
-    @Description("Тест логина через кнопку войти в аккаунт")
-    public void testLoginFromMain(){
-        mainPage.open();
-        mainPage.loginButtonClick();
-        assertEquals("Вход",loginPage.getHeaderText());
-        loginPage.enterEmailField(user.getEmail());
-        loginPage.enterPasswordField(user.getPassword());
-        loginPage.clickLoginButton();
-        assertTrue(mainPage.isCreateOrderButton());
-    }
-    @Test
-    @DisplayName("Тест логина через скнопку Личный кабинет")
-    @Description("Тест логина через скнопку Личный кабинет")
-    public void testLoginFromCabinetButton(){
-        mainPage.open();
-        mainPage.cabinetButtonClick();
-        assertEquals("Вход",loginPage.getHeaderText());
-        loginPage.enterEmailField(user.getEmail());
-        loginPage.enterPasswordField(user.getPassword());
-        loginPage.clickLoginButton();
-        assertTrue(mainPage.isCreateOrderButton());
-    }
-    @Test
-    @DisplayName("Тест логина через страницу регистрации")
-    @Description("Тест логина через страницу регистрации")
-    public void testLoginFromRegistrationPage(){
-        RegisterPage regPage = new RegisterPage(driver);
-        regPage.open();
-        regPage.loginButtonClick();
-        assertEquals("Вход",loginPage.getHeaderText());
-        loginPage.enterEmailField(user.getEmail());
-        loginPage.enterPasswordField(user.getPassword());
-        loginPage.clickLoginButton();
-        assertTrue(mainPage.isCreateOrderButton());
+    @DisplayName("Вход в аккаунт по кнопке «Войти в аккаунт» на главной")
+    public void inputByButtonToEnterAccountHp(){
+        LoginPage loginPage = new LoginPage(rule.getWebDriver());
+        BasePage basePage = new BasePage(rule.getWebDriver());
 
+        basePage
+                .openHomePage()
+                .clickOnButtonToEnterAccountHp();
+        loginPage
+                .waitingForLoading()
+                .enterEmail(userApi.getEmail())
+                .enterPassword(userApi.getPassword())
+                .clickOnButtonLoginInFormAuth()
+                .checkHomePageAfterAuth();
     }
-    @Test
-    @DisplayName("Тест логина через страницу восстановления пароля")
-    @Description("Тест логина через страницу восстановления пароля")
-    public void testLoginFromRecoveryPage(){
-        PasswordRecoveryPage pwdRecPage = new PasswordRecoveryPage(driver);
-        pwdRecPage.open();
-        pwdRecPage.clickLoginButton();
-        assertEquals("Вход",loginPage.getHeaderText());
-        loginPage.enterEmailField(user.getEmail());
-        loginPage.enterPasswordField(user.getPassword());
-        loginPage.clickLoginButton();
-        assertTrue(mainPage.isCreateOrderButton());
 
+    @Test
+    @DisplayName("Вход в аккаунт через кнопку «Личный кабинет» на главной")
+    public void inputByPersonalAccountButtonHp(){
+        LoginPage loginPage = new LoginPage(rule.getWebDriver());
+        BasePage basePage = new BasePage(rule.getWebDriver());
+
+        basePage
+                .openHomePage()
+                .clickOnPersonalAccountButtonHp();
+        loginPage
+                .enterEmail(userApi.getEmail())
+                .enterPassword(userApi.getPassword())
+                .clickOnButtonLoginInFormAuth()
+                .checkHomePageAfterAuth();
+    }
+
+    @Test
+    @DisplayName("Вход в аккаунт через кнопку в форме регистрации")
+    public void inputByLoginButtonInFormRegistration(){
+        RegisterPage registerPage = new RegisterPage(rule.getWebDriver());
+        LoginPage loginPage = new LoginPage(rule.getWebDriver());
+
+        registerPage
+                .openRegistrationPage();
+        loginPage
+                .clickOnLoginButtonInForms()
+                .enterEmail(userApi.getEmail())
+                .enterPassword(userApi.getPassword())
+                .checkHomePageAfterAuth();
+    }
+
+    @Test
+    @DisplayName("Вход в аккаунт через кнопку в форме восстановления пароля")
+    public void inputByLoginButtonInFormRestorePassword(){
+        LoginPage loginPage = new LoginPage(rule.getWebDriver());
+
+        loginPage
+                .openPasswordRestorePage()
+                .clickOnLoginButtonInForms()
+                .enterEmail(userApi.getEmail())
+                .enterPassword(userApi.getPassword())
+                .clickOnButtonLoginInFormAuth()
+                .checkHomePageAfterAuth();
     }
 
     @After
-    public void teardown() {
-        userClient.deleteUser(accessToken, user);
-        driver.quit();
+    public void tearDown(){
+        userStep.delete(userApi);
+        clearBrowserCookies();
     }
 }

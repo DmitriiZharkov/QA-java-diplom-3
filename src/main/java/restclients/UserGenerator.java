@@ -1,51 +1,16 @@
 package restclients;
 
-import org.apache.commons.lang3.RandomStringUtils;
+import com.github.javafaker.Faker;
 
 public class UserGenerator {
-    public static User getRandom(){
-        final String email = RandomStringUtils.randomAlphabetic(10)+"@yandex.ru";
-        final String password = RandomStringUtils.randomAlphabetic(10);
-        final String name = RandomStringUtils.randomAlphabetic(10);
-        return new User(email, password, name);
-    }
-    public static User getWrongRandom(){
-        final String email = RandomStringUtils.randomAlphabetic(10)+"@yandex.ru";
-        final String password = RandomStringUtils.randomAlphabetic(5);
-        final String name = RandomStringUtils.randomAlphabetic(10);
-        return new User(email, password, name);
-    }
-    public static User getRandomNoEmail(){
-        final String email = RandomStringUtils.randomAlphabetic(10)+"@yandex.ru";
-        final String password = RandomStringUtils.randomAlphabetic(10);
-        final String name = RandomStringUtils.randomAlphabetic(10);
-        return new User(null, password, name);
-    }
-    public static User getRandomNoPassword(){
-        final String email = RandomStringUtils.randomAlphabetic(10)+"@yandex.ru";
-        final String password = RandomStringUtils.randomAlphabetic(10);
-        final String name = RandomStringUtils.randomAlphabetic(10);
-        return new User(email, null, name);
-    }
-    public static User getRandomNoName(){
-        final String email = RandomStringUtils.randomAlphabetic(10)+"@yandex.ru";
-        final String password = RandomStringUtils.randomAlphabetic(10);
-        final String name = RandomStringUtils.randomAlphabetic(10);
-        return new User(email, password, null);
-    }
-    public static User getRandomWrongEmail(){
-        final String email = RandomStringUtils.randomAlphabetic(10);
-        final String password = RandomStringUtils.randomAlphabetic(10);
-        final String name = RandomStringUtils.randomAlphabetic(10);
-        return new User(email, password, name);
-    }
-    public static User userForLogin(String email, String password) {
-        return new User(email, password, null);
-    }
-    public static User userForWrongLogin(String email, String password) {
-        return new User("failTest"+email, "failTest"+password, null);
-    }
-    public static User changedUser (String email, String password, String name) {
-        return new User(email, password, name);
+
+    static Faker faker = new Faker();
+
+    public static UserApi randomUser(){
+        return new UserApi().builder()
+                .email(faker.internet().emailAddress())
+                .password(faker.bothify("56???????"))
+                .name(faker.bothify("??????"))
+                .build();
     }
 }

@@ -1,109 +1,88 @@
-import io.qameta.allure.Description;
+import com.github.javafaker.Faker;
+import driver.ChromeRule;
+import driver.DriverFactory;
+import driver.YandexRule;
 import io.qameta.allure.junit4.DisplayName;
-import io.restassured.response.ValidatableResponse;
-import org.hamcrest.CoreMatchers;
-import org.junit.*;
+import io.restassured.RestAssured;
+import io.restassured.response.Response;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.chrome.ChromeOptions;
-import pageobject.LoginPage;
 import pageobject.RegisterPage;
-import restclients.User;
-import restclients.UserClient;
-import restclients.UserGenerator;
+import restclients.UserApi;
+import restclients.UserStep;
 
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.Matchers.isEmptyOrNullString;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.openqa.selenium.devtools.v85.network.Network.clearBrowserCookies;
+import static restclients.Urls.STELLAR_BURGERS_HOME_PAGE_URL;
+import static restclients.UserGenerator.randomUser;
 
 @RunWith(Parameterized.class)
 public class TestRegistryUser {
-    private static UserClient userClient;
-    private WebDriver driver;
-    private User user;
-    private User failUser;
-    private String accessToken;
-    private BrowserType browserType;
-    private boolean isSuccess;
-    public TestRegistryUser(BrowserType browserType){
-        this.browserType = browserType;
+
+    Faker faker = new Faker();
+    UserStep userStep = new UserStep();
+    UserApi userApi = randomUser();
+
+    @Rule
+    public DriverFactory rule;
+
+    public TestRegistryUser(DriverFactory rule) {
+        this.rule = rule;
     }
 
     @Parameterized.Parameters
-    public static Object[][] getBrowserVariants() {
-        return new Object[][] {
-                {BrowserType.CHROME},
-                {BrowserType.YANDEX},
+    public static Object[][] getData() {
+        return new Object[][]{
+                { new YandexRule() },
+                { new ChromeRule() }
         };
     }
 
     @Before
-    public void setUp() {
-        user = UserGenerator.getRandom();
-        failUser = UserGenerator.getWrongRandom();
-
-        userClient = new UserClient();
-        ChromeOptions options = new ChromeOptions();
-        switch (browserType) {
-            case CHROME:
-                System.setProperty("webdriver.chrome.driver", "C:\\WebDriver\\bin\\chromedriver.exe");
-                break;
-            case YANDEX:
-                System.setProperty("webdriver.chrome.driver", "C:\\WebDriver\\bin\\yandexdriver.exe");
-                break;
-            default:
-                fail("Неожиданный браузер");
-                break;
-        }
-        options.addArguments("--whitelisted-ips=''");
-        driver = new ChromeDriver(options);
-
+    public void setUp(){
+        RestAssured.baseURI = STELLAR_BURGERS_HOME_PAGE_URL;
+        userStep.create(userApi);
     }
-    @Test
-    @DisplayName("Тест успещной регистрации пользователя")
-    @Description("Тест успещной регистрации пользователя")
-    public void testRegistrationSuccess() {
-        RegisterPage regPage = new RegisterPage(driver);
-        regPage.open();
-        assertEquals("Регистрация",regPage.getHeaderText());
-        regPage.enterEmailField(user.getEmail());
-        regPage.enterNameField(user.getName());
-        regPage.enterPasswordField(user.getPassword());
-        regPage.clickRegistryButton();
-        LoginPage loginPage = new LoginPage(driver);
-        assertEquals("Вход",loginPage.getHeaderText());
 
-        ValidatableResponse createResponse = userClient.loginUser(UserGenerator.userForLogin(user.getEmail(), user.getPassword()));
-        createResponse.assertThat().statusCode(equalTo(200));
-        createResponse.assertThat().body("user.email",equalTo(user.getEmail().toLowerCase()));
-        createResponse.assertThat().body("user.name",equalTo(user.getName()));
-        createResponse.assertThat().body("accessToken", CoreMatchers.not(isEmptyOrNullString()));
-        isSuccess = createResponse.extract().path("success");
-        accessToken = createResponse.extract().path("accessToken");
+    @Test
+    @DisplayName("Заполнение формы и регистрация с валидными данными")
+    public void fillingOutTheRegistrationForm(){
+        RegisterPage registerPage = new RegisterPage(rule.getWebDriver());
+
+        registerPage
+                .openRegistrationPage()
+                .enterName(userApi.getName())
+                .enterEmail(userApi.getEmail())
+                .enterPassword(userApi.getPassword())
+                .tapOnBattonRegistration()
+
+                .checkRegistrationSuccess();
     }
-    @Test
-    @DisplayName("Тест ошибки регистрации (пароль менее 6 символов)")
-    @Description("Тест ошибки регистрации (пароль менее 6 символов)")
-    public void testRegistrationFail() {
-        RegisterPage regPage = new RegisterPage(driver);
-        regPage.open();
-        assertEquals("Регистрация",regPage.getHeaderText());
-        regPage.enterEmailField(failUser.getEmail());
-        regPage.enterNameField(failUser.getName());
-        regPage.enterPasswordField(failUser.getPassword());
-        regPage.clickRegistryButton();
-        assertEquals("Некорректный пароль",regPage.getErrorText());
 
+    @Test
+    @DisplayName("Заполнение формы регистрации с некорректным паролем: пароль 5 символов")
+    public void fillingRegistrationFormWithIncorrectPassword(){
+        RegisterPage registerPage = new RegisterPage(rule.getWebDriver());
+
+        registerPage
+                .openRegistrationPage()
+                .enterName(userApi.getName())
+                .enterEmail(userApi.getPassword())
+                .enterPassword(faker.bothify("29???"))
+                .tapOnBattonRegistration()
+
+                .checkIncorrectPassword();
     }
 
     @After
-    public void teardown() {
-        if (isSuccess) {
-            userClient.deleteUser(accessToken, user);
-        }
-        driver.quit();
+    public void tearDown(){
+
+        Response response = userStep.login(userApi);
+        if(response.statusCode() == 200) {userStep.delete(userApi);}
+
+        clearBrowserCookies();
     }
 }
