@@ -1,0 +1,44 @@
+-------------------------------------------------------------------------------
+Test set: TestAccountProfile
+-------------------------------------------------------------------------------
+Tests run: 8, Failures: 0, Errors: 4, Skipped: 0, Time elapsed: 40.373 s <<< FAILURE! - in TestAccountProfile
+transitionFromAccountByLogo[0](TestAccountProfile)  Time elapsed: 4.062 s  <<< ERROR!
+org.openqa.selenium.SessionNotCreatedException: 
+Could not start a new session. Response code 500. Message: session not created: This version of ChromeDriver only supports Chrome version 118
+Current browser version is 120.0.6099.2570 with binary path C:\Users\otdel\AppData\Local\Yandex\YandexBrowser\Application\browser.exe 
+Host info: host: 'LAPTOP-0FDUR9A6', ip: '192.168.1.14'
+Build info: version: '4.8.1', revision: '8ebccac989'
+System info: os.name: 'Windows 10', os.arch: 'amd64', os.version: '10.0', java.version: '11.0.20'
+Driver info: org.openqa.selenium.chrome.ChromeDriver
+Command: [null, newSession {capabilities=[Capabilities {browserName: chrome, goog:chromeOptions: {args: [--remote-allow-origins=*], extensions: []}}], desiredCapabilities=Capabilities {browserName: chrome, goog:chromeOptions: {args: [--remote-allow-origins=*], extensions: []}}}]
+
+transitionFromAccountByConstructorButton[0](TestAccountProfile)  Time elapsed: 1.122 s  <<< ERROR!
+org.openqa.selenium.SessionNotCreatedException: 
+Could not start a new session. Response code 500. Message: session not created: This version of ChromeDriver only supports Chrome version 118
+Current browser version is 120.0.6099.2570 with binary path C:\Users\otdel\AppData\Local\Yandex\YandexBrowser\Application\browser.exe 
+Host info: host: 'LAPTOP-0FDUR9A6', ip: '192.168.1.14'
+Build info: version: '4.8.1', revision: '8ebccac989'
+System info: os.name: 'Windows 10', os.arch: 'amd64', os.version: '10.0', java.version: '11.0.20'
+Driver info: org.openqa.selenium.chrome.ChromeDriver
+Command: [null, newSession {capabilities=[Capabilities {browserName: chrome, goog:chromeOptions: {args: [--remote-allow-origins=*], extensions: []}}], desiredCapabilities=Capabilities {browserName: chrome, goog:chromeOptions: {args: [--remote-allow-origins=*], extensions: []}}}]
+
+transitionFromAccountByExitButton[0](TestAccountProfile)  Time elapsed: 0.942 s  <<< ERROR!
+org.openqa.selenium.SessionNotCreatedException: 
+Could not start a new session. Response code 500. Message: session not created: This version of ChromeDriver only supports Chrome version 118
+Current browser version is 120.0.6099.2570 with binary path C:\Users\otdel\AppData\Local\Yandex\YandexBrowser\Application\browser.exe 
+Host info: host: 'LAPTOP-0FDUR9A6', ip: '192.168.1.14'
+Build info: version: '4.8.1', revision: '8ebccac989'
+System info: os.name: 'Windows 10', os.arch: 'amd64', os.version: '10.0', java.version: '11.0.20'
+Driver info: org.openqa.selenium.chrome.ChromeDriver
+Command: [null, newSession {capabilities=[Capabilities {browserName: chrome, goog:chromeOptions: {args: [--remote-allow-origins=*], extensions: []}}], desiredCapabilities=Capabilities {browserName: chrome, goog:chromeOptions: {args: [--remote-allow-origins=*], extensions: []}}}]
+
+checkGoToAccountByPersonalAccountButton[0](TestAccountProfile)  Time elapsed: 0.94 s  <<< ERROR!
+org.openqa.selenium.SessionNotCreatedException: 
+Could not start a new session. Response code 500. Message: session not created: This version of ChromeDriver only supports Chrome version 118
+Current browser version is 120.0.6099.2570 with binary path C:\Users\otdel\AppData\Local\Yandex\YandexBrowser\Application\browser.exe 
+Host info: host: 'LAPTOP-0FDUR9A6', ip: '192.168.1.14'
+Build info: version: '4.8.1', revision: '8ebccac989'
+System info: os.name: 'Windows 10', os.arch: 'amd64', os.version: '10.0', java.version: '11.0.20'
+Driver info: org.openqa.selenium.chrome.ChromeDriver
+Command: [null, newSession {capabilities=[Capabilities {browserName: chrome, goog:chromeOptions: {args: [--remote-allow-origins=*], extensions: []}}], desiredCapabilities=Capabilities {browserName: chrome, goog:chromeOptions: {args: [--remote-allow-origins=*], extensions: []}}}]
+

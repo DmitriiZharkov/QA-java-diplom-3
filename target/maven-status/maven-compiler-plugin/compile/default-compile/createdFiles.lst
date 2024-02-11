@@ -1,0 +1,12 @@
+driver\ChromeRule.class
+restclients\UserApi$UserApiBuilder.class
+driver\DriverFactory.class
+pageobject\PersonalAccount.class
+restclients\UserGenerator.class
+pageobject\LoginPage.class
+driver\YandexRule.class
+pageobject\RegisterPage.class
+pageobject\BasePage.class
+restclients\Urls.class
+restclients\UserApi.class
+restclients\UserStep.class
